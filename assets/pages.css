@@ -17,6 +17,18 @@
 }
 
 * { box-sizing: border-box; }
+
+/* Going from page to page: the old page fades away and the new one comes up softly, as a
+   wash settles on paper, never a cut. Browsers that cannot do this get the same from
+   pages.js. */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: page-out 0.3s ease-in both; }
+::view-transition-new(root) { animation: page-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes page-out { to { opacity: 0; } }
+@keyframes page-in { from { opacity: 0; transform: translateY(8px); } }
+html.leaving body { opacity: 0; transition: opacity 0.28s ease-in; }
+html.arriving body { opacity: 0; }
+body { transition: opacity 0.5s ease-out; }
 html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: #FFFFFF; color: var(--ink); font-family: var(--body); font-size: 18px; line-height: 1.6; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
 a { color: var(--accent); text-underline-offset: 3px; }
@@ -66,7 +78,9 @@ footer a { color: var(--accent); text-underline-offset: 3px; min-height: 32px; d
 footer > div:last-child { min-height: 32px; display: flex; align-items: center; justify-content: center; }
 /* Under the small print, a bed of the park's flowers along the very bottom of the page. */
 .bed { position: relative; flex: 0 0 auto; height: 96px; overflow: hidden; pointer-events: none; }
-.bed img { position: absolute; bottom: -22px; height: 104px; width: auto; transform-origin: 50% 80%; animation: bed-sway 3.4s ease-in-out infinite alternate; }
+.bed img { position: absolute; bottom: -22px; height: 104px; width: auto; transform-origin: 50% 80%; animation: bed-rise 0.8s cubic-bezier(0.2, 0.8, 0.25, 1) both, bed-sway 3.4s ease-in-out infinite alternate; }
+/* As a page arrives, its flowers come up from the ground, one after another. */
+@keyframes bed-rise { from { opacity: 0; translate: 0 40px; } to { opacity: 1; translate: 0 0; } }
 @keyframes bed-sway { from { rotate: -1.5deg; } to { rotate: 1.5deg; } }
 
 /* ---- the page's life: a bee, and a cardinal on the title ---- */
@@ -82,4 +96,6 @@ footer > div:last-child { min-height: 32px; display: flex; align-items: center; 
 }
 @media (prefers-reduced-motion: reduce) {
   .bed img, .life .wings { animation: none; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  html.leaving body, html.arriving body { opacity: 1; }
 }

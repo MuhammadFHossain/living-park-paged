@@ -19,11 +19,31 @@
       var h = 88 + Math.random() * 22;
       img.style.height = h + 'px';
       img.style.left = 'calc(' + (t * 100).toFixed(1) + '% - ' + (h * 0.45).toFixed(0) + 'px)';
-      img.style.animationDelay = '-' + (Math.random() * 3).toFixed(2) + 's';
+      // Rising in from the middle out as the page arrives, then swaying, each at its own pace.
+      img.style.animationDelay = Math.round(Math.abs(t - 0.5) * 2 * 420 + 150) + 'ms, -' + (Math.random() * 3).toFixed(2) + 's';
       bed.appendChild(img);
     }
   }
   if (calm) return;
+
+  // Where the browser cannot fade from page to page by itself, the page fades out before
+  // a link to another of our pages is followed, and the new one fades in.
+  if (!('onpagereveal' in window)) {
+    var root = document.documentElement;
+    root.classList.add('arriving');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.remove('arriving'); }); });
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href]');
+      if (!a || a.target || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      var url = new URL(a.href, location.href);
+      if (url.origin !== location.origin || url.protocol === 'mailto:' || (url.pathname === location.pathname && url.hash)) return;
+      e.preventDefault();
+      root.classList.add('leaving');
+      setTimeout(function () { location.href = url.href; }, 280);
+    });
+    // Coming back with the back button, the page is shown again as it was left: clear the fade.
+    window.addEventListener('pageshow', function () { root.classList.remove('leaving'); });
+  }
 
   var life = document.createElement('div');
   life.className = 'life';
