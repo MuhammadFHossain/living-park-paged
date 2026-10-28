@@ -48,9 +48,10 @@
   }
 
   // The bee: drifts from place to place with a little weave, rests, and goes on.
-  var BEE = 64;
+  var BEE = 42;
   var bee = critter([['bee-wings', 'wings'], ['bee', 'body']], BEE);
-  var b = { x: innerWidth * 0.8, y: innerHeight * 0.3, tx: 0, ty: 0, rest: 0, face: 1 };
+  // It steers: turns toward where it is going, slows as it comes near, and hovers.
+  var b = { x: innerWidth * 0.8, y: innerHeight * 0.3, vx: 0, vy: 0, tx: 0, ty: 0, rest: 0, face: 1, faceTo: 1 };
   function pickBee() {
     b.tx = innerWidth * (0.08 + Math.random() * 0.84);
     b.ty = innerHeight * (0.15 + Math.random() * 0.7);
@@ -58,10 +59,12 @@
   pickBee();
 
   // The cardinal: flies in, sits on the title a while, hops round once or twice, flies off.
-  var BIRD = 96;
+  var BIRD = 72;
   var bird = critter([['cardinal-legs', 'legs'], ['cardinal', 'body'], ['cardinal-wing', 'wing']], BIRD);
-  bird.wing.style.transformOrigin = (BIRD / 2 + 3.1) + 'px ' + (BIRD / 2 - 2.3) + 'px';
-  var c = { phase: 'away', wait: 3 + Math.random() * 3, leg: null, x: -200, y: -200, face: 1, sat: 0, hop: 0, frac: 0.5 };
+  // The paintings are 96 points square, shown smaller: the shoulder is scaled with them.
+  var k96 = BIRD / 96;
+  bird.wing.style.transformOrigin = (BIRD / 2 + 3.1 * k96) + 'px ' + (BIRD / 2 - 2.3 * k96) + 'px';
+  var c = { phase: 'away', wait: 3 + Math.random() * 3, leg: null, x: -200, y: -200, face: 1, shown: 1, sat: 0, hop: 0, frac: 0.5, wing: 0, legs: 0 };
   function perch() {
     var h1 = document.querySelector('h1');
     if (!h1) return null;
@@ -85,18 +88,19 @@
   function frame(now) {
     var dt = Math.min(0.05, (now - last) / 1000);
     last = now;
+    // The bee eases its speed up and down, never jumping, and turns round over a moment.
+    var dx = b.tx - b.x, dy = b.ty - b.y, d = Math.hypot(dx, dy) || 1, want = 0;
     if (b.rest > 0) b.rest -= dt;
-    else {
-      var dx = b.tx - b.x, dy = b.ty - b.y, d = Math.hypot(dx, dy);
-      if (d < 6) { b.rest = 0.6 + Math.random() * 1.6; pickBee(); }
-      else {
-        var v = Math.min(90, 40 + d * 0.5) * dt;
-        b.x += (dx / d) * v;
-        b.y += (dy / d) * v;
-        if (Math.abs(dx) > 4) b.face = dx > 0 ? 1 : -1;
-      }
-    }
-    bee.el.style.transform = 'translate(' + (b.x - BEE / 2).toFixed(1) + 'px,' + (b.y - BEE / 2 + Math.sin(now / 260) * 3).toFixed(1) + 'px) scaleX(' + b.face + ')';
+    else if (d < 10) { b.rest = 0.8 + Math.random() * 1.6; pickBee(); }
+    else want = Math.min(58, d * 0.9);
+    var steer = Math.min(1, dt * 1.6);
+    b.vx += ((dx / d) * want - b.vx) * steer;
+    b.vy += ((dy / d) * want - b.vy) * steer;
+    b.x += b.vx * dt;
+    b.y += b.vy * dt;
+    if (Math.abs(b.vx) > 6) b.faceTo = b.vx > 0 ? 1 : -1;
+    b.face += (b.faceTo - b.face) * Math.min(1, dt * 5);
+    bee.el.style.transform = 'translate(' + (b.x - BEE / 2).toFixed(2) + 'px,' + (b.y - BEE / 2 + Math.sin(now / 320) * 2.5).toFixed(2) + 'px) scaleX(' + b.face.toFixed(3) + ')';
 
     if (c.phase === 'away') {
       c.wait -= dt;
@@ -113,7 +117,7 @@
       c.y = at[1];
       c.sat -= dt;
       c.hop = Math.max(0, c.hop - dt);
-      if (c.hop === 0 && Math.random() < dt * 0.4) { c.hop = 0.25; c.face *= -1; }
+      if (c.hop === 0 && Math.random() < dt * 0.25) { c.hop = 0.3; c.face *= -1; }
       if (c.sat <= 0) {
         c.leg = { from: [c.x, c.y], to: [c.face > 0 ? innerWidth + BIRD : -BIRD, c.y - innerHeight * 0.15], lift: 30, t: 0, dur: 2.4 };
         c.phase = 'out';
@@ -132,11 +136,17 @@
       }
     }
     var flying = c.phase === 'in' || c.phase === 'out';
-    var beat = flying ? Math.sin(now / 60) : 0;
-    bird.wing.style.transform = 'rotate(' + (flying ? -12 + beat * 34 : 0).toFixed(1) + 'deg)';
-    bird.legs.style.opacity = flying ? '0' : '1';
-    var hop = c.hop > 0 ? Math.sin((c.hop / 0.25) * Math.PI) * 6 : 0;
-    bird.el.style.transform = 'translate(' + (c.x - BIRD / 2).toFixed(1) + 'px,' + (c.y - BIRD * 0.62 - hop).toFixed(1) + 'px) scaleX(' + c.face + ')';
+    // Wings beat in flight, slower as it lands, and settle closed once it sits; its feet
+    // come down as it lands; a hop turns it round over the hop.
+    var landing = c.phase === 'in' && c.leg ? Math.max(0, (c.leg.t - 0.75) / 0.25) : 0;
+    var beatTo = flying ? (-12 + Math.sin(now / (60 + landing * 50)) * 34) * (1 - landing * 0.7) : 0;
+    c.wing += (beatTo - c.wing) * Math.min(1, dt * (flying ? 30 : 8));
+    bird.wing.style.transform = 'rotate(' + c.wing.toFixed(1) + 'deg)';
+    c.legs += ((flying && landing < 0.5 ? 0 : 1) - c.legs) * Math.min(1, dt * 6);
+    bird.legs.style.opacity = c.legs.toFixed(2);
+    c.shown += (c.face - c.shown) * Math.min(1, dt * 7);
+    var hop = c.hop > 0 ? Math.sin((c.hop / 0.3) * Math.PI) * 4 : 0;
+    bird.el.style.transform = 'translate(' + (c.x - BIRD / 2).toFixed(2) + 'px,' + (c.y - BIRD * 0.62 - hop).toFixed(2) + 'px) scaleX(' + c.shown.toFixed(3) + ')';
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
