@@ -59,13 +59,11 @@ strong { font-weight: 700; }
 .signoff { margin: 40px 0 0; font-family: var(--display); font-size: 21px; text-align: center; color: var(--muted); }
 
 /* ---- the foot: the small print, and under it a bed of the park's flowers along the bottom ---- */
-footer { margin-top: 64px; border-top: 1px solid var(--line); padding: 20px 0 6px; color: var(--muted); font-size: 15px; }
-.bed { position: relative; flex: 0 0 auto; height: 104px; overflow: hidden; pointer-events: none; }
-.bed img { position: absolute; bottom: -24px; height: 110px; width: auto; transform-origin: 50% 80%; animation: bed-sway 3.4s ease-in-out infinite alternate; }
-@keyframes bed-sway { from { rotate: -1.5deg; } to { rotate: 1.5deg; } }
-footer .links { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-bottom: 8px; }
-footer a { color: var(--muted); }
-footer a:hover { color: var(--accent); }
+/* The same small print as the home page: centred links in sap green, and one quiet line. */
+footer { margin-top: 64px; padding: 10px 16px 4px; text-align: center; color: var(--muted); font-size: 14px; }
+footer .links { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 22px; }
+footer a { color: var(--accent); text-underline-offset: 3px; min-height: 32px; display: inline-flex; align-items: center; }
+footer > div:last-child { min-height: 32px; display: flex; align-items: center; justify-content: center; }
 
 /* ---- the page's life: a bee, and a cardinal on the title ---- */
 .life { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 5; }
@@ -77,8 +75,6 @@ footer a:hover { color: var(--accent); }
 @media (max-width: 560px) {
   body { font-size: 17px; }
   .short { flex-direction: column; gap: 12px; }
-  footer { text-align: center; }
-  footer .links { justify-content: center; }
 }
 @media (prefers-reduced-motion: reduce) {
   .bed img, .life .wings { animation: none; }
