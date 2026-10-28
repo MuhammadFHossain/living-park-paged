@@ -64,6 +64,10 @@ footer { margin-top: 64px; padding: 10px 16px 4px; text-align: center; color: va
 footer .links { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 22px; }
 footer a { color: var(--accent); text-underline-offset: 3px; min-height: 32px; display: inline-flex; align-items: center; }
 footer > div:last-child { min-height: 32px; display: flex; align-items: center; justify-content: center; }
+/* Under the small print, a bed of the park's flowers along the very bottom of the page. */
+.bed { position: relative; flex: 0 0 auto; height: 96px; overflow: hidden; pointer-events: none; }
+.bed img { position: absolute; bottom: -22px; height: 104px; width: auto; transform-origin: 50% 80%; animation: bed-sway 3.4s ease-in-out infinite alternate; }
+@keyframes bed-sway { from { rotate: -1.5deg; } to { rotate: 1.5deg; } }
 
 /* ---- the page's life: a bee, and a cardinal on the title ---- */
 .life { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 5; }

@@ -9,13 +9,14 @@
   // The bed: a row of the park's flowers, no two neighbours alike, taller toward the middle.
   var bed = document.querySelector('.bed');
   if (bed) {
-    var n = Math.max(6, Math.round(bed.clientWidth / 70));
+    // Close together, so their leaves overlap a little and the bed has no gaps.
+    var n = Math.max(7, Math.round(bed.clientWidth / 52));
     for (var k = 0; k < n; k++) {
-      var t = n === 1 ? 0.5 : k / (n - 1);
+      var t = (k + 0.5) / n;
       var img = document.createElement('img');
       img.src = base + 'flower-' + (((k * 5) % 11) + 1) + '.png';
       img.alt = '';
-      var h = 92 + Math.sin(t * Math.PI) * 30 + Math.random() * 12;
+      var h = 88 + Math.random() * 22;
       img.style.height = h + 'px';
       img.style.left = 'calc(' + (t * 100).toFixed(1) + '% - ' + (h * 0.45).toFixed(0) + 'px)';
       img.style.animationDelay = '-' + (Math.random() * 3).toFixed(2) + 's';
