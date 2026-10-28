@@ -9,7 +9,7 @@
   // The bed: a row of the park's flowers, no two neighbours alike, taller toward the middle.
   var bed = document.querySelector('.bed');
   if (bed) {
-    var n = Math.max(6, Math.round(bed.clientWidth / 64));
+    var n = Math.max(6, Math.round(bed.clientWidth / 70));
     for (var k = 0; k < n; k++) {
       var t = n === 1 ? 0.5 : k / (n - 1);
       var img = document.createElement('img');
