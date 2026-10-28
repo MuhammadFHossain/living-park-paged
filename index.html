@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="color-scheme" content="light" />
+    <title>Living Park</title>
+    <meta name="description" content="A calm watercolour garden you build and watch come alive. Plant native flowers, give bees a home, and birds, butterflies and people find your park." />
+    <style>
+      /* Fonts are bundled with the app so it works offline. Both are SIL Open Font License. */
+      @font-face {
+        font-family: 'Young Serif';
+        src: url('./fonts/YoungSerif-Regular.woff2') format('woff2');
+        font-weight: 400;
+        font-display: block;
+      }
+      @font-face {
+        font-family: 'Atkinson Hyperlegible';
+        src: url('./fonts/AtkinsonHyperlegible-Regular.woff2') format('woff2');
+        font-weight: 400;
+        font-display: block;
+      }
+      @font-face {
+        font-family: 'Atkinson Hyperlegible';
+        src: url('./fonts/AtkinsonHyperlegible-Bold.woff2') format('woff2');
+        font-weight: 700;
+        font-display: block;
+      }
+      html, body { margin: 0; background: #FFFFFF; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-B6TNpZ3j.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CTS4AH2I.css">
+  <link rel="icon" href="assets/favicon.png" />
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+    <link rel="canonical" href="https://livingpark.app/" />
+    <meta property="og:title" content="Living Park" />
+    <meta property="og:description" content="A calm watercolour garden you build and watch come alive." />
+    <meta property="og:image" content="https://livingpark.app/assets/icon-512.png" />
+    </head>
+  <body>
+    <div id="app">
+      <header id="topbar"></header>
+      <div id="row2">
+        <button id="ribbon" type="button" aria-label="Goals"></button>
+      </div>
+      <main id="stage">
+        <div id="board"></div>
+        <div id="overlay" aria-hidden="true"></div>
+      </main>
+      <div id="note" role="status" aria-live="polite"></div>
+      <nav id="tray" aria-label="Things to place">
+        <button id="tray-fold" type="button" aria-label="Hide the tray"></button>
+        <div id="tray-body"></div>
+      </nav>
+      <button id="bar-tab" class="fold-tab" type="button"></button>
+      <button id="tray-tab" class="fold-tab" type="button"></button>
+    </div>
+    <div id="layer"></div>
+  </body>
+</html>
